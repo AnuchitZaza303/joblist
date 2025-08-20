@@ -1,1 +1,385 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบแจ้งงาน - วงดนตรีอยุธยา ป.บันเทิงศิลป์</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Font: Sarabun -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Bootstrap Icons CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Font Awesome Icons CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        body { font-family: 'Sarabun', sans-serif; }
+        :root {
+            --bg-main: #F8FAFC; --bg-accent: #D9EAFD; --border-color: #BCCCDC;
+            --text-muted: #9AA6B2; --text-dark: #334155; --primary-blue: #3B82F6;
+            --primary-red: #EF4444;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        .swal2-popup { font-family: 'Sarabun', sans-serif; border-radius: 0.75rem !important; border: 1px solid var(--border-color); }
+        .swal2-title { color: var(--text-dark) !important; }
+        .swal2-html-container { color: #64748B !important; text-align: left !important; }
+        .swal2-confirm { background-color: var(--primary-blue) !important; border-radius: 0.5rem !important; }
+        .swal2-cancel { background-color: #E5E7EB !important; color: #374151 !important; border-radius: 0.5rem !important; }
+        .swal2-input { border-radius: 0.5rem !important; border-color: var(--border-color) !important; }
+        .swal2-input:focus { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3) !important; border-color: var(--primary-blue) !important; }
+        .swal2-confirm.swal2-styled.swal2-default-outline:focus { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3) !important; }
+        .swal2-confirm.swal2-styled.swal2-default-outline { background-color: var(--primary-blue) !important; }
+        .swal2-deny.swal2-styled.swal2-default-outline { background-color: var(--primary-red) !important; }
+        /* Style for reset progress list */
+        .reset-progress-list { list-style: none; padding: 0; margin-top: 1rem; }
+        .reset-progress-list li { display: flex; align-items: center; gap: 0.75rem; padding: 0.25rem 0; transition: all 0.3s ease; }
+        .reset-progress-list .icon-spinner { animation: fa-spin 2s linear infinite; color: #60A5FA; }
+        .reset-progress-list .icon-success { color: #22C55E; }
+        .reset-progress-list .text-pending { color: #64748B; }
+        .reset-progress-list .text-done { color: #374151; font-weight: 500; }
+    </style>
+</head>
+<body class="bg-[var(--bg-main)] text-gray-800 min-h-screen antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-6xl">
+        <!-- Public View -->
+        <div id="public-view">
+            <header class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-700">ระบบแจ้งงาน</h1>
+                <p class="text-lg md:text-xl text-[var(--text-muted)]">วงดนตรีอยุธยา ป.บันเทิงศิลป์</p>
+            </header>
+            <nav class="bg-white rounded-lg shadow-md p-4 mb-8 flex flex-wrap justify-between items-center sticky top-4 z-10 border border-[var(--border-color)] gap-4">
+                <div class="flex items-center gap-4 flex-wrap">
+                    <div id="public-month-selector-container" class="flex items-center gap-2 sm:gap-4 text-gray-600"></div>
+                    <div id="public-day-filter-container" class="bg-gray-100 p-1 rounded-lg flex items-center"></div>
+                </div>
+                <div id="public-auth-buttons"></div>
+            </nav>
+            <main id="public-content-container" class="bg-white rounded-lg shadow-md p-4 md:p-6 border border-[var(--border-color)] overflow-x-auto">
+                <div id="public-table-placeholder" class="text-center py-20">
+                    <p class="text-[var(--text-muted)]">กรุณาเลือกเดือนและปีเพื่อแสดงข้อมูล</p>
+                </div>
+            </main>
+        </div>
+
+        <!-- Admin View -->
+        <div id="admin-view" class="hidden">
+            <header class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-blue-800">ระบบจัดการงาน</h1>
+                <p class="text-lg md:text-xl text-[var(--text-muted)]">ผู้ดูแลระบบ: ป.บันเทิงศิลป์</p>
+            </header>
+            <nav class="bg-white rounded-lg shadow-md p-4 mb-8 flex flex-wrap justify-between items-center sticky top-4 z-10 border border-[var(--border-color)] gap-4">
+                <div class="flex items-center gap-4 flex-wrap">
+                    <div id="admin-month-selector-container" class="flex items-center gap-2 sm:gap-4 text-gray-600"></div>
+                    <div id="admin-day-filter-container" class="bg-gray-100 p-1 rounded-lg flex items-center"></div>
+                </div>
+                <div id="admin-auth-buttons" class="flex items-center gap-2"></div>
+            </nav>
+            <main id="admin-content-container" class="bg-white rounded-lg shadow-md p-4 md:p-6 border border-[var(--border-color)] overflow-x-auto">
+                <div id="admin-table-placeholder" class="text-center py-20">
+                    <p class="text-[var(--text-muted)]">กรุณาเลือกเดือนและปีเพื่อแก้ไขข้อมูล</p>
+                </div>
+            </main>
+            <div id="admin-save-button-container" class="mt-8 text-center">
+                <button id="save-data-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105 inline-flex items-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    บันทึกข้อมูล
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKTIyFdXvG6c6e-Jp3p25SdORhcXjjfA3hfP-K5NA8/dev";
+        let currentData = [];
+        let dayFilter = 'all'; 
+        const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+        const dateRange = { start: { year: 2025, month: 7 }, end: { year: 2026, month: 11 } };
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth();
+
+        const Toast = Swal.mixin({
+            toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true,
+            didOpen: (toast) => { toast.addEventListener('mouseenter', Swal.stopTimer); toast.addEventListener('mouseleave', Swal.resumeTimer); }
+        });
+
+        function jsonpRequest(params, callback) {
+            const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+            window[callbackName] = function(data) { delete window[callbackName]; document.body.removeChild(script); callback(data); };
+            const script = document.createElement('script');
+            params.callback = callbackName;
+            const queryString = Object.keys(params).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`).join('&');
+            script.src = SCRIPT_URL + '?' + queryString;
+            script.onerror = () => { Toast.fire({ icon: 'error', title: 'เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว' }); Swal.close(); };
+            document.body.appendChild(script);
+        }
+
+        function autoResize(element) { element.style.height = 'auto'; element.style.height = (element.scrollHeight) + 'px'; }
+
+        function renderSelectors(viewPrefix) {
+            const container = document.getElementById(`${viewPrefix}-month-selector-container`);
+            let yearOptions = '';
+            for (let y = dateRange.start.year; y <= dateRange.end.year; y++) { if (y < currentYear) continue; yearOptions += `<option value="${y}">${y + 543}</option>`; }
+            container.innerHTML = `<i class="fa-regular fa-calendar-days text-xl text-gray-500"></i><select id="${viewPrefix}-year-select" class="bg-gray-50 border border-[var(--border-color)] text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"><option selected disabled>เลือกปี</option>${yearOptions}</select><select id="${viewPrefix}-month-select" class="bg-gray-50 border border-[var(--border-color)] text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" disabled><option selected disabled>เลือกเดือน</option></select>`;
+            const yearSelect = document.getElementById(`${viewPrefix}-year-select`);
+            const monthSelect = document.getElementById(`${viewPrefix}-month-select`);
+            yearSelect.addEventListener('change', () => {
+                const selectedYear = parseInt(yearSelect.value);
+                let startMonth = 0;
+                if (selectedYear === currentYear) startMonth = currentMonth;
+                let monthOptionsHTML = '<option selected disabled>เลือกเดือน</option>';
+                for (let i = startMonth; i < months.length; i++) { monthOptionsHTML += `<option value="${i}">${months[i]}</option>`; }
+                monthSelect.innerHTML = monthOptionsHTML;
+                monthSelect.disabled = false;
+                document.getElementById(`${viewPrefix}-content-container`).innerHTML = `<div id="${viewPrefix}-table-placeholder" class="text-center py-20"><p class="text-[var(--text-muted)]">กรุณาเลือกเดือนและปีเพื่อแสดงข้อมูล</p></div>`;
+            });
+            monthSelect.addEventListener('change', () => {
+                const selectedYear = yearSelect.value;
+                const selectedMonth = monthSelect.value;
+                if (selectedYear && selectedMonth && selectedYear !== 'เลือกปี' && selectedMonth !== 'เลือกเดือน') { fetchAndDisplayData(viewPrefix, selectedYear, selectedMonth); }
+            });
+        }
+
+        function renderDayFilter(viewPrefix) {
+            const container = document.getElementById(`${viewPrefix}-day-filter-container`);
+            container.innerHTML = `<button name="filter-all-btn" class="px-3 py-1 text-sm font-medium rounded-md transition-colors">ทุกวัน</button><button name="filter-weekend-btn" class="px-3 py-1 text-sm font-medium rounded-md transition-colors">เฉพาะ ส-อา</button>`;
+            container.querySelectorAll('button').forEach(btn => { btn.addEventListener('click', () => setDayFilter(btn.name === 'filter-all-btn' ? 'all' : 'weekend')); });
+            updateFilterButtonsStyle();
+        }
+
+        function setDayFilter(filterType) {
+            dayFilter = filterType;
+            updateFilterButtonsStyle();
+            if (currentData.length > 0) {
+                const viewPrefix = sessionStorage.getItem('isAdmin') === 'true' ? 'admin' : 'public';
+                renderTable(viewPrefix, currentData);
+            }
+        }
+
+        function updateFilterButtonsStyle() {
+            document.querySelectorAll('[name="filter-all-btn"], [name="filter-weekend-btn"]').forEach(btn => {
+                const isActive = (dayFilter === 'all' && btn.name === 'filter-all-btn') || (dayFilter === 'weekend' && btn.name === 'filter-weekend-btn');
+                if (isActive) { btn.classList.add('bg-blue-500', 'text-white', 'shadow-sm'); btn.classList.remove('text-gray-600', 'hover:bg-gray-200'); } 
+                else { btn.classList.remove('bg-blue-500', 'text-white', 'shadow-sm'); btn.classList.add('text-gray-600', 'hover:bg-gray-200'); }
+            });
+        }
+
+        function renderTable(viewPrefix, data) {
+            const isAdmin = viewPrefix === 'admin';
+            const contentContainer = document.getElementById(`${viewPrefix}-content-container`);
+            contentContainer.innerHTML = '';
+            let dataToDisplay = data;
+
+            if (dayFilter === 'weekend') {
+                dataToDisplay = dataToDisplay.filter(item => {
+                    const [y, m, d] = item.Date.split('-').map(Number);
+                    const itemDate = new Date(y, m - 1, d);
+                    const day = itemDate.getDay();
+                    return day === 0 || day === 6;
+                });
+            }
+
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const todayString = `${yyyy}-${mm}-${dd}`;
+            
+            dataToDisplay = dataToDisplay.filter(item => item.Date >= todayString);
+
+            if (dataToDisplay.length === 0) {
+                const message = dayFilter === 'weekend' ? 'ไม่มีข้อมูลวันเสาร์-อาทิตย์ที่กำลังจะมาถึงในเดือนนี้' : 'ไม่มีข้อมูลวันที่กำลังจะมาถึงในเดือนนี้';
+                contentContainer.innerHTML = `<div class="text-center py-20"><p class="text-[var(--text-muted)]">${message}</p></div>`;
+                return;
+            }
+            const daysOfWeek = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
+            let tableRows = '';
+            dataToDisplay.forEach(item => {
+                const [year, month, day] = item.Date.split('-').map(Number);
+                const localDate = new Date(year, month - 1, day);
+
+                const dayName = daysOfWeek[localDate.getDay()];
+                const formattedDate = `${localDate.getDate()} ${months[localDate.getMonth()]} ${localDate.getFullYear() + 543}`;
+                const detailContent = isAdmin ? `<textarea data-date="${item.Date}" class="w-full p-2 border border-transparent hover:border-[var(--border-color)] focus:border-[var(--border-color)] rounded-md bg-blue-50 focus:ring-2 focus:ring-blue-300 transition resize-none overflow-hidden" oninput="autoResize(this)">${item.Details || ''}</textarea>` : `<p class="whitespace-pre-wrap">${item.Details || '<span class="text-[var(--text-muted)]">- ไม่มีข้อมูล -</span>'}</p>`;
+                tableRows += `<tr class="border-b border-[var(--border-color)] hover:bg-blue-50 transition-colors"><td class="p-3 md:p-4 align-middle font-medium whitespace-nowrap">${formattedDate}</td><td class="p-3 md:p-4 align-middle whitespace-nowrap">${dayName}</td><td class="p-3 md:p-4 align-middle w-full">${detailContent}</td></tr>`;
+            });
+            contentContainer.innerHTML = `<table class="w-full text-sm text-left text-gray-600"><thead class="text-xs text-gray-700 uppercase bg-gray-100 border-b-2 border-[var(--border-color)]"><tr><th scope="col" class="p-3 md:p-4"><i class="bi bi-calendar-week mr-2"></i>วันที่</th><th scope="col" class="p-3 md:p-4"><i class="fa-solid fa-flag mr-2"></i>วัน</th><th scope="col" class="p-3 md:p-4"><i class="fa-solid fa-clipboard-list mr-2"></i>รายละเอียดงาน</th></tr></thead><tbody>${tableRows}</tbody></table>`;
+            if (isAdmin) { contentContainer.querySelectorAll('textarea').forEach(textarea => setTimeout(() => autoResize(textarea), 0)); }
+        }
+        
+        function initializePublicView() {
+            renderSelectors('public'); renderDayFilter('public');
+            const authContainer = document.getElementById('public-auth-buttons');
+            authContainer.innerHTML = `<button id="login-btn" class="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"><i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ</button>`;
+            authContainer.querySelector('#login-btn').addEventListener('click', showLoginModal);
+        }
+
+        function initializeAdminView() {
+            renderSelectors('admin'); renderDayFilter('admin');
+            const authContainer = document.getElementById('admin-auth-buttons');
+            authContainer.innerHTML = `<button id="reset-btn" class="inline-flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"><i class="fa-solid fa-arrows-rotate"></i> รีเซ็ตข้อมูล</button><button id="logout-btn" class="inline-flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"><i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ</button>`;
+            authContainer.querySelector('#logout-btn').addEventListener('click', handleLogout);
+            authContainer.querySelector('#reset-btn').addEventListener('click', handleReset);
+            document.getElementById('save-data-btn').addEventListener('click', handleSave);
+        }
+
+        function fetchAndDisplayData(viewPrefix, year, month) {
+            Swal.fire({ title: 'กำลังโหลดข้อมูล...', showConfirmButton: false, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            jsonpRequest({ action: 'getData', year: year, month: parseInt(month) + 1 }, (data) => {
+                Swal.close();
+                if (data && data.success) { currentData = data.data; renderTable(viewPrefix, currentData); } 
+                else { Swal.fire('เกิดข้อผิดพลาด', data.message || 'ไม่สามารถโหลดข้อมูลได้', 'error'); }
+            });
+        }
+
+        function handleSave() {
+            const textareas = document.querySelectorAll('#admin-content-container textarea[data-date]');
+            const updatedData = Array.from(textareas).map(textarea => ({ date: textarea.dataset.date, details: textarea.value.trim() }));
+            Swal.fire({ title: 'ยืนยันการบันทึก', text: "คุณต้องการบันทึกการเปลี่ยนแปลงทั้งหมดใช่หรือไม่?", icon: 'question', showCancelButton: true, confirmButtonText: 'ใช่, บันทึกเลย!', cancelButtonText: 'ยกเลิก' })
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({ title: 'กำลังบันทึกข้อมูล', text: 'กรุณารอสักครู่', allowOutsideClick: false, didOpen: () => {
+                            Swal.showLoading();
+                            jsonpRequest({ action: 'saveData', data: JSON.stringify(updatedData) }, (response) => {
+                                if (response && response.success) { Swal.close(); Toast.fire({ icon: 'success', title: 'บันทึกข้อมูลเรียบร้อย!' }); } 
+                                else { Swal.fire('เกิดข้อผิดพลาด', response.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error'); }
+                            });
+                        }});
+                    }
+                });
+        }
+
+        function handleReset() {
+            Swal.fire({
+                title: '<span class="text-red-600">คำเตือน!</span>',
+                html: 'การกระทำนี้จะลบข้อมูลทั้งหมดในระบบอย่างถาวร (รวมถึงข้อมูลล็อกอิน) และเริ่มต้นใหม่ทั้งหมด <br><br> หากต้องการดำเนินการต่อ กรุณาพิมพ์ <strong>RESET</strong> ในช่องด้านล่าง',
+                icon: 'warning',
+                input: 'text',
+                inputPlaceholder: 'พิมพ์ RESET ที่นี่',
+                showCancelButton: true,
+                confirmButtonText: 'ยืนยันการรีเซ็ต',
+                confirmButtonColor: '#DC2626',
+                cancelButtonText: 'ยกเลิก',
+                preConfirm: (value) => {
+                    if (value !== 'RESET') {
+                        Swal.showValidationMessage('คุณต้องพิมพ์ "RESET" ให้ถูกต้อง');
+                        return false;
+                    }
+                    return value;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ 
+                        title: 'กำลังดำเนินการรีเซ็ต', 
+                        html: `
+                            <ul class="reset-progress-list">
+                                <li id="step1"><i class="fa-solid fa-spinner icon-spinner"></i> <span class="text-pending">กำลังส่งคำขอรีเซ็ต...</span></li>
+                                <li id="step2"><i class="fa-solid fa-spinner icon-spinner"></i> <span class="text-pending">กำลังลบข้อมูล Events...</span></li>
+                                <li id="step3"><i class="fa-solid fa-spinner icon-spinner"></i> <span class="text-pending">กำลังลบข้อมูล Users...</span></li>
+                                <li id="step4"><i class="fa-solid fa-spinner icon-spinner"></i> <span class="text-pending">กำลังสร้างข้อมูลเริ่มต้น...</span></li>
+                                <li id="step5"><i class="fa-solid fa-spinner icon-spinner"></i> <span class="text-pending">ดำเนินการเสร็จสิ้น...</span></li>
+                            </ul>
+                        `,
+                        allowOutsideClick: false, 
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            const updateStep = (stepId, text) => {
+                                const step = document.getElementById(stepId);
+                                if (step) {
+                                    step.querySelector('i').className = 'fa-solid fa-check icon-success';
+                                    step.querySelector('span').className = 'text-done';
+                                    step.querySelector('span').textContent = text;
+                                }
+                            };
+                            setTimeout(() => updateStep('step1', 'ส่งคำขอรีเซ็ตแล้ว'), 500);
+                            setTimeout(() => updateStep('step2', 'ลบข้อมูล Events เรียบร้อย'), 1500);
+                            setTimeout(() => updateStep('step3', 'ลบข้อมูล Users เรียบร้อย'), 2500);
+                            jsonpRequest({ action: 'resetData' }, (response) => {
+                                if (response && response.success) {
+                                    setTimeout(() => {
+                                        updateStep('step4', 'สร้างข้อมูลเริ่มต้นสำเร็จ');
+                                        setTimeout(() => {
+                                            updateStep('step5', 'ดำเนินการเสร็จสิ้น');
+                                            Swal.close();
+                                            Toast.fire({ icon: 'success', title: 'รีเซ็ตข้อมูลสำเร็จ!' });
+                                            setTimeout(() => {
+                                                sessionStorage.removeItem('isAdmin');
+                                                location.reload();
+                                            }, 1500);
+                                        }, 1000);
+                                    }, 500);
+                                } else {
+                                    Swal.fire('เกิดข้อผิดพลาด', response.message || 'ไม่สามารถรีเซ็ตข้อมูลได้', 'error');
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        function showLoginModal() {
+            Swal.fire({
+                title: 'เข้าสู่ระบบผู้ดูแล',
+                html: `<input type="text" id="username" class="swal2-input" placeholder="ชื่อผู้ใช้"><input type="password" id="password" class="swal2-input" placeholder="รหัสผ่าน">`,
+                confirmButtonText: 'เข้าสู่ระบบ',
+                focusConfirm: false,
+                preConfirm: () => {
+                    const username = Swal.getPopup().querySelector('#username').value;
+                    const password = Swal.getPopup().querySelector('#password').value;
+                    if (!username || !password) Swal.showValidationMessage(`กรุณากรอกชื่อผู้ใช้และรหัสผ่าน`);
+                    return { username, password };
+                }
+            }).then((result) => { if (result.isConfirmed) handleLogin(result.value.username, result.value.password); });
+        }
+
+        function handleLogin(username, password) {
+             Swal.fire({ title: 'กำลังตรวจสอบ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            jsonpRequest({ action: 'login', username, password }, (response) => {
+                if (response && response.success) {
+                    Swal.close();
+                    Toast.fire({ icon: 'success', title: 'เข้าสู่ระบบสำเร็จ' });
+                    sessionStorage.setItem('isAdmin', 'true');
+                    document.getElementById('public-view').classList.add('hidden');
+                    document.getElementById('admin-view').classList.remove('hidden');
+                    initializeAdminView();
+                } else {
+                    Swal.fire('เข้าสู่ระบบล้มเหลว', 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'error');
+                }
+            });
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('isAdmin');
+            Toast.fire({ icon: 'info', title: 'ออกจากระบบแล้ว' });
+            document.getElementById('admin-view').classList.add('hidden');
+            document.getElementById('public-view').classList.remove('hidden');
+            initializePublicView();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('isAdmin') === 'true') {
+                document.getElementById('public-view').classList.add('hidden');
+                document.getElementById('admin-view').classList.remove('hidden');
+                initializeAdminView();
+            } else {
+                initializePublicView();
+            }
+        });
+    </script>
+</body>
+</html>
 
