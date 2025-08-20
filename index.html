@@ -182,9 +182,26 @@
             const contentContainer = document.getElementById(`${viewPrefix}-content-container`);
             contentContainer.innerHTML = '';
             let dataToDisplay = data;
-            if (dayFilter === 'weekend') { dataToDisplay = dataToDisplay.filter(item => { const day = new Date(item.Date).getUTCDay(); return day === 0 || day === 6; }); }
-            const today = new Date(); today.setHours(0, 0, 0, 0);
-            dataToDisplay = dataToDisplay.filter(item => new Date(item.Date) >= today);
+
+            if (dayFilter === 'weekend') {
+                dataToDisplay = dataToDisplay.filter(item => {
+                    // Manually parse date to avoid timezone issues
+                    const [y, m, d] = item.Date.split('-').map(Number);
+                    const itemDate = new Date(y, m - 1, d);
+                    const day = itemDate.getDay();
+                    return day === 0 || day === 6;
+                });
+            }
+
+            // --- MODIFICATION: Robust date comparison for mobile devices ---
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const todayString = `${yyyy}-${mm}-${dd}`;
+            
+            dataToDisplay = dataToDisplay.filter(item => item.Date >= todayString);
+
             if (dataToDisplay.length === 0) {
                 const message = dayFilter === 'weekend' ? 'ไม่มีข้อมูลวันเสาร์-อาทิตย์ที่กำลังจะมาถึงในเดือนนี้' : 'ไม่มีข้อมูลวันที่กำลังจะมาถึงในเดือนนี้';
                 contentContainer.innerHTML = `<div class="text-center py-20"><p class="text-[var(--text-muted)]">${message}</p></div>`;
@@ -193,8 +210,10 @@
             const daysOfWeek = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
             let tableRows = '';
             dataToDisplay.forEach(item => {
-                const dateObj = new Date(item.Date);
-                const localDate = new Date(dateObj.getTime() + dateObj.getTimezoneOffset() * 60000);
+                // --- MODIFICATION: Robust date parsing for display ---
+                const [year, month, day] = item.Date.split('-').map(Number);
+                const localDate = new Date(year, month - 1, day); // Creates date in local timezone
+
                 const dayName = daysOfWeek[localDate.getDay()];
                 const formattedDate = `${localDate.getDate()} ${months[localDate.getMonth()]} ${localDate.getFullYear() + 543}`;
                 const detailContent = isAdmin ? `<textarea data-date="${item.Date}" class="w-full p-2 border border-transparent hover:border-[var(--border-color)] focus:border-[var(--border-color)] rounded-md bg-blue-50 focus:ring-2 focus:ring-blue-300 transition resize-none overflow-hidden" oninput="autoResize(this)">${item.Details || ''}</textarea>` : `<p class="whitespace-pre-wrap">${item.Details || '<span class="text-[var(--text-muted)]">- ไม่มีข้อมูล -</span>'}</p>`;
@@ -246,7 +265,6 @@
                 });
         }
 
-        // MODIFICATION: Detailed progress for reset function
         function handleReset() {
             Swal.fire({
                 title: '<span class="text-red-600">คำเตือน!</span>',
@@ -289,13 +307,9 @@
                                     step.querySelector('span').textContent = text;
                                 }
                             };
-
-                            // Simulate progress on client-side for better UX
                             setTimeout(() => updateStep('step1', 'ส่งคำขอรีเซ็ตแล้ว'), 500);
                             setTimeout(() => updateStep('step2', 'ลบข้อมูล Events เรียบร้อย'), 1500);
                             setTimeout(() => updateStep('step3', 'ลบข้อมูล Users เรียบร้อย'), 2500);
-                            
-                            // Send the actual request
                             jsonpRequest({ action: 'resetData' }, (response) => {
                                 if (response && response.success) {
                                     setTimeout(() => {
