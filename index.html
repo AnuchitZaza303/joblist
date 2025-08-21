@@ -33,6 +33,7 @@
             font-family: 'Sarabun', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
+            -webkit-text-size-adjust: 100%; /* Prevent font scaling on mobile */
         }
 
         .navbar {
@@ -65,6 +66,10 @@
             color: var(--primary-color);
         }
 
+        .table {
+            word-wrap: break-word;
+        }
+
         .table thead {
             background-color: var(--primary-light);
             color: var(--primary-color);
@@ -74,6 +79,10 @@
         .table th, .table td {
             vertical-align: middle;
         }
+        
+        .table .date-col { width: 30%; }
+        .table .day-col { width: 25%; }
+
 
         .form-control:focus, .form-select:focus {
             border-color: var(--primary-color);
@@ -131,6 +140,32 @@
             border-radius: 5px;
             transition: width 0.2s ease-in-out;
         }
+
+        /* --- Mobile Responsive Adjustments --- */
+        @media (max-width: 576px) {
+            .navbar-brand h1 {
+                font-size: 1.25rem;
+            }
+            .navbar-brand p {
+                font-size: 0.8rem;
+            }
+            .card-body {
+                padding: 1rem;
+            }
+            .table {
+                font-size: 0.9rem;
+            }
+            .table th, .table td {
+                padding: 0.75rem 0.5rem;
+            }
+            .table .date-col, .table .day-col {
+                width: auto; /* Let columns resize on mobile */
+                min-width: 110px; /* Ensure date is not too cramped */
+            }
+            .filter-row .col-form-label {
+                margin-bottom: 0.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -144,10 +179,10 @@
             </a>
             <div class="d-flex">
                 <button id="login-btn" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
-                    <i class="fa-solid fa-right-to-bracket"></i>Admin Login
+                    <i class="fa-solid fa-right-to-bracket"></i><span class="d-none d-sm-inline ms-1">Admin Login</span>
                 </button>
                 <button id="logout-btn" class="btn btn-danger" style="display:none;">
-                    <i class="fa-solid fa-right-from-bracket"></i>Logout
+                    <i class="fa-solid fa-right-from-bracket"></i><span class="d-none d-sm-inline ms-1">Logout</span>
                 </button>
             </div>
         </div>
@@ -158,13 +193,13 @@
         <!-- User View -->
         <div id="user-view">
             <div class="card">
-                <div class="card-body p-4">
+                <div class="card-body p-md-4">
                     <h5 class="card-title mb-3"><i class="fa-solid fa-calendar-days"></i>ตารางงาน</h5>
-                    <div class="row g-3 align-items-center mb-3">
+                    <div class="row g-2 align-items-center mb-3 filter-row">
                         <div class="col-auto">
                             <label for="month-select-user" class="col-form-label"><i class="fa-solid fa-calendar-alt me-2"></i>เลือกเดือน:</label>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-12 col-sm-6 col-md-5 col-lg-4">
                             <select id="month-select-user" class="form-select"></select>
                         </div>
                     </div>
@@ -172,8 +207,8 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th scope="col" style="width: 20%;">วันที่</th>
-                                    <th scope="col" style="width: 20%;">วัน</th>
+                                    <th scope="col" class="date-col">วันที่</th>
+                                    <th scope="col" class="day-col">วัน</th>
                                     <th scope="col">รายละเอียดงาน</th>
                                 </tr>
                             </thead>
@@ -189,13 +224,13 @@
         <!-- Admin View -->
         <div id="admin-view">
             <div class="card">
-                <div class="card-body p-4">
+                <div class="card-body p-md-4">
                     <h5 class="card-title mb-3"><i class="fa-solid fa-pencil"></i>จัดการข้อมูลงาน (Admin)</h5>
-                     <div class="row g-3 align-items-center mb-3">
+                     <div class="row g-2 align-items-center mb-3 filter-row">
                         <div class="col-auto">
                             <label for="month-select-admin" class="col-form-label"><i class="fa-solid fa-calendar-alt me-2"></i>เลือกเดือน:</label>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-12 col-sm-6 col-md-5 col-lg-4">
                             <select id="month-select-admin" class="form-select"></select>
                         </div>
                     </div>
@@ -203,8 +238,8 @@
                          <table class="table">
                             <thead>
                                 <tr>
-                                    <th scope="col" style="width: 20%;">วันที่</th>
-                                    <th scope="col" style="width: 20%;">วัน</th>
+                                    <th scope="col" class="date-col">วันที่</th>
+                                    <th scope="col" class="day-col">วัน</th>
                                     <th scope="col">รายละเอียดงาน</th>
                                 </tr>
                             </thead>
