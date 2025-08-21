@@ -113,9 +113,7 @@
                                     <th scope="col">รายละเอียดงาน</th>
                                 </tr>
                             </thead>
-                            <tbody id="events-table-body-user">
-                                <!-- Data will be loaded here -->
-                            </tbody>
+                            <tbody id="events-table-body-user"></tbody>
                         </table>
                     </div>
                 </div>
@@ -128,8 +126,6 @@
                 <li class="nav-item"><a class="nav-link active" href="#" id="admin-data-tab"><i class="fa-solid fa-calendar-days"></i> จัดการข้อมูล</a></li>
                 <li class="nav-item"><a class="nav-link" href="#" id="admin-settings-tab"><i class="fa-solid fa-gear"></i> ตั้งค่าระบบ</a></li>
             </ul>
-
-            <!-- Admin Data View -->
             <div id="admin-data-view">
                  <div class="card">
                     <div class="card-body p-md-4">
@@ -160,19 +156,13 @@
                                         <th scope="col">รายละเอียดงาน</th>
                                     </tr>
                                 </thead>
-                                <tbody id="events-table-body-admin">
-                                    <!-- Admin data form will be loaded here -->
-                                </tbody>
+                                <tbody id="events-table-body-admin"></tbody>
                             </table>
                         </div>
-                        <button id="save-btn" class="btn btn-primary w-100 mt-3 py-2">
-                            <i class="fa-solid fa-floppy-disk"></i>บันทึกข้อมูล
-                        </button>
+                        <button id="save-btn" class="btn btn-primary w-100 mt-3 py-2"><i class="fa-solid fa-floppy-disk"></i>บันทึกข้อมูล</button>
                     </div>
                 </div>
             </div>
-
-            <!-- Settings View -->
             <div id="settings-view">
                 <div class="card">
                     <div class="card-body p-md-4">
@@ -192,12 +182,11 @@
                         <button id="save-settings-btn" class="btn btn-primary w-100 mt-3 py-2"><i class="fa-solid fa-floppy-disk"></i>บันทึกการตั้งค่า</button>
                     </div>
                 </div>
-
                 <div class="card mt-4">
                     <div class="card-body p-md-4">
                          <div class="reset-zone">
                              <h6 class="fw-bold"><i class="fa-solid fa-triangle-exclamation"></i> พื้นที่อันตราย</h6>
-                             <p class="small text-muted">การรีเซ็ตระบบจะลบข้อมูลทั้งหมด (ข้อมูลงาน, ผู้ใช้, และการตั้งค่า) และคืนค่าเริ่มต้นจากโรงงาน ไม่สามารถกู้คืนได้</p>
+                             <p class="small text-muted">การรีเซ็ตระบบจะลบข้อมูลทั้งหมดและคืนค่าเริ่มต้นจากโรงงาน ไม่สามารถกู้คืนได้</p>
                              <button id="reset-system-btn" class="btn btn-danger w-100"><i class="fa-solid fa-arrows-rotate"></i>รีเซ็ตระบบทั้งหมด</button>
                          </div>
                     </div>
@@ -224,9 +213,7 @@
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fa-solid fa-right-to-bracket"></i>Login
-                        </button>
+                        <button type="submit" class="btn btn-primary w-100"><i class="fa-solid fa-right-to-bracket"></i>Login</button>
                     </form>
                 </div>
             </div>
@@ -240,7 +227,7 @@
     <script>
         $(document).ready(function() {
             // --- CONFIGURATION ---
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxb1q7sRhHUtxjj-xe00ByMR26zy-qZyH6YbqNES3Mrxkzbs8IsT60KEhS1eoupra6QUw/exec";
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNi3WtaeECmpk5G9jdunyg2prrdIqBw4_4Bi1kFpso9KXRBSLyIjFqMSlX5vlmfsyPrw/exec";
             const START_YEAR = 2025;
             const END_YEAR = 2026;
             const APP_START_MONTH = 7; 
@@ -254,12 +241,19 @@
 
             // --- HELPER FUNCTIONS ---
             function getDayName(dateString) {
-                const date = new Date(dateString);
+                const date = new Date(dateString + "T00:00:00");
                 return date.toLocaleDateString('th-TH', { weekday: 'long' });
             }
 
+            function toYYYYMMDD(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
             function formatShortDate(dateString) {
-                const date = new Date(dateString);
+                const date = new Date(dateString + "T00:00:00");
                 const shortMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
                 const day = date.getDate();
                 const monthIndex = date.getMonth();
@@ -372,8 +366,8 @@
             
             function renderFilteredTable() {
                 const isUserView = currentView === 'user';
-                const year = $(isUserView ? '#year-select-user' : '#year-select-admin').val();
-                const month = $(isUserView ? '#month-select-user' : '#month-select-admin').val();
+                const year = parseInt($(isUserView ? '#year-select-user' : '#year-select-admin').val());
+                const month = parseInt($(isUserView ? '#month-select-user' : '#month-select-admin').val());
                 const tbodySelector = isUserView ? '#events-table-body-user' : '#events-table-body-admin';
                 const $tbody = $(tbodySelector);
                 $tbody.empty();
@@ -386,7 +380,7 @@
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
                 let hasVisibleEvents = false;
-                const yearMonthPrefix = `${year}-${month}`;
+                const yearMonthPrefix = `${year}-${String(month).padStart(2, '0')}`;
 
                 const filteredEvents = allEventsData.filter(item => item.date.startsWith(yearMonthPrefix));
 
@@ -394,7 +388,7 @@
                 const startDate = new Date(year, month - 1, 1);
                 const endDate = new Date(year, month, 0);
                 for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-                    allDaysInMonth.push(d.toISOString().split('T')[0]);
+                    allDaysInMonth.push(toYYYYMMDD(new Date(d)));
                 }
 
                 allDaysInMonth.forEach(dateString => {
@@ -573,37 +567,32 @@
             });
 
             $('#save-btn').on('click', function() {
-                const dataToSave = [];
+                const eventsForMonth = [];
                 const year = $('#year-select-admin').val();
                 const month = $('#month-select-admin').val();
-                const yearMonthPrefix = `${year}-${month}`;
+                const yearMonth = `${year}-${month}`;
 
-                // Get all dates for the current month from the table
-                const datesInView = new Set();
                 $('#events-table-body-admin tr').each(function() {
                     const date = $(this).data('date');
                     if (date) {
-                        datesInView.add(date);
                         const details = $(this).find('.event-details').val();
                         if (details && details.trim() !== '') {
-                            dataToSave.push({ date: date, details: details });
+                            eventsForMonth.push({ date: date, details: details });
                         }
                     }
                 });
-
-                // Combine with existing data from other months
-                allEventsData.forEach(event => {
-                    if (!event.date.startsWith(yearMonthPrefix)) {
-                        dataToSave.push(event);
-                    }
-                });
+                
+                const payload = {
+                    yearMonth: yearMonth,
+                    events: eventsForMonth
+                };
 
                 showLoader('กำลังบันทึกข้อมูล');
                 $.ajax({
                     url: SCRIPT_URL,
                     method: 'GET',
                     dataType: 'jsonp',
-                    data: { action: 'saveEvents', data: JSON.stringify(dataToSave) },
+                    data: { action: 'saveEvents', data: JSON.stringify(payload) },
                     timeout: 20000
                 }).done(function(response) {
                      if (!response || typeof response.success === 'undefined') {
