@@ -213,6 +213,16 @@
                             <label for="logoUrlInput" class="form-label">URL โลโก้ (ถ้ามี)</label>
                             <input type="text" class="form-control" id="logoUrlInput" data-setting-key="logoUrl">
                         </div>
+                        <div class="row">
+                             <div class="col-md-6 mb-3">
+                                <label for="startYearInput" class="form-label">ปีเริ่มต้น (พ.ศ.)</label>
+                                <input type="number" class="form-control" id="startYearInput" data-setting-key="startYear">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="endYearInput" class="form-label">ปีสิ้นสุด (พ.ศ.)</label>
+                                <input type="number" class="form-control" id="endYearInput" data-setting-key="endYear">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card mt-4">
@@ -281,11 +291,8 @@
     <script>
         $(document).ready(function() {
             // --- CONFIGURATION ---
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBASsBM3SavllCQm81wEzZr3xqOquxZMnJ7vQYo6AkXWWV87hukUa9GFaV_O2z_3lACQ/exec";
-            const START_YEAR = 2025;
-            const END_YEAR = 2026;
-            const APP_START_MONTH = 7; 
-
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby59cEy-tYkJcg1LAgvmh5Q8BsopgIzqrzkkTMV_i7gPCb9dQefxnM_fOOLu5GMTmHD0w/exec";
+            
             // --- STATE ---
             let currentView = 'user';
             let siteSettings = {};
@@ -341,12 +348,17 @@
             }
 
             function initializeDropdowns() {
+                const startYearBE = parseInt(siteSettings.startYear) || 2568;
+                const endYearBE = parseInt(siteSettings.endYear) || 2569;
+                const startYearAD = startYearBE - 543;
+                const endYearAD = endYearBE - 543;
+
                 const $yearSelectUser = $('#year-select-user');
                 const $yearSelectAdmin = $('#year-select-admin');
                 $yearSelectUser.empty();
                 $yearSelectAdmin.empty();
 
-                for (let year = START_YEAR; year <= END_YEAR; year++) {
+                for (let year = startYearAD; year <= endYearAD; year++) {
                     const beYear = year + 543;
                     $yearSelectUser.append(`<option value="${year}">พ.ศ. ${beYear}</option>`);
                     $yearSelectAdmin.append(`<option value="${year}">พ.ศ. ${beYear}</option>`);
@@ -359,23 +371,25 @@
                 const today = new Date();
                 const currentYear = today.getFullYear();
                 const currentMonth = today.getMonth();
+                const startYearAD = parseInt(siteSettings.startYear || '2568') - 543;
+                const APP_START_MONTH = 7; // August is month 7 (0-indexed)
 
                 const selectedYearUser = parseInt($('#year-select-user').val());
                 const selectedYearAdmin = parseInt($('#year-select-admin').val());
 
-                populateMonthsForYear('#month-select-user', selectedYearUser, currentYear, currentMonth);
-                populateMonthsForYear('#month-select-admin', selectedYearAdmin, currentYear, currentMonth);
+                populateMonthsForYear('#month-select-user', selectedYearUser, currentYear, currentMonth, startYearAD, APP_START_MONTH);
+                populateMonthsForYear('#month-select-admin', selectedYearAdmin, currentYear, currentMonth, startYearAD, APP_START_MONTH);
             }
 
-            function populateMonthsForYear(selector, selectedYear, currentYear, currentMonth) {
+            function populateMonthsForYear(selector, selectedYear, currentYear, currentMonth, appStartYear, appStartMonth) {
                 const $monthSelect = $(selector);
                 const currentVal = $monthSelect.val();
                 $monthSelect.empty();
                 const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
                 
-                let startMonth = 0;
-                if (selectedYear === START_YEAR) {
-                    startMonth = APP_START_MONTH;
+                let startMonth = 0; // January
+                if (selectedYear === appStartYear) {
+                    startMonth = appStartMonth;
                 }
                 if (selectedYear === currentYear) {
                     startMonth = Math.max(startMonth, currentMonth);
@@ -619,6 +633,8 @@
                             Swal.fire('สำเร็จ!', 'บันทึกการตั้งค่าเรียบร้อย', 'success');
                             siteSettings = newSettings;
                             applyTextSettings();
+                            initializeDropdowns();
+                            renderFilteredTable();
                         } else {
                             Swal.fire('ผิดพลาด!', response.message || 'ไม่สามารถบันทึกได้', 'error');
                         }
