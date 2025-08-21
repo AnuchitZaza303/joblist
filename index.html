@@ -25,20 +25,40 @@
         .navbar-brand img { max-height: 40px; margin-right: 10px; }
         .navbar-brand h1 { font-size: 1.5rem; font-weight: 700; margin: 0; color: var(--primary-color); }
         .navbar-brand p { font-size: 0.9rem; margin: 0; color: #6B7280; }
-        .card { border: 1px solid var(--border-color); border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0,0,0,.05); background-color: var(--white-color); }
+        
+        /* --- Animation --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card { 
+            border: 1px solid var(--border-color); 
+            border-radius: 0.75rem; 
+            box-shadow: 0 4px 12px rgba(0,0,0,.05); 
+            background-color: var(--white-color); 
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
         .card-title i { margin-right: 0.5rem; color: var(--primary-color); }
         .table { word-wrap: break-word; }
         .table thead { background-color: var(--primary-light); color: var(--primary-color); font-weight: 600; }
         .table th, .table td { vertical-align: middle; }
+        .table tbody tr { transition: background-color 0.2s ease-in-out; }
+        .table tbody tr:hover { background-color: #f3f4f6; }
         .table .date-col { width: 30%; }
         .table .day-col { width: 25%; }
         .form-control:focus, .form-select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25); }
+        
         .btn { border-radius: 0.5rem; transition: all 0.2s ease-in-out; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         .btn i { margin-right: 0.5rem; }
+        
         .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); font-weight: 500; }
-        .btn-primary:hover { background-color: #2563EB; border-color: #2563EB; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2); }
+        .btn-primary:hover { background-color: #2563EB; border-color: #2563EB; }
         .btn-outline-primary { color: var(--primary-color); border-color: var(--primary-color); font-weight: 500; }
         .btn-outline-primary:hover, .btn-check:checked+.btn-outline-primary { background-color: var(--primary-color); color: var(--white-color); }
+        
         .admin-nav .nav-link { color: #6B7280; }
         .admin-nav .nav-link.active { color: var(--primary-color); font-weight: 600; border-bottom: 2px solid var(--primary-color); }
         #admin-section, #settings-view { display: none; }
@@ -46,6 +66,7 @@
         .progress-bar-custom { width: 0%; height: 10px; background-color: var(--primary-color); border-radius: 5px; transition: width 0.2s ease-in-out; }
         .reset-zone { border: 1px solid var(--danger-light); background-color: var(--danger-light); border-radius: 0.5rem; padding: 1rem; }
         .reset-zone h6 { color: var(--danger-color); }
+        
         @media (max-width: 576px) {
             .navbar-brand h1 { font-size: 1.25rem; }
             .navbar-brand p { font-size: 0.8rem; }
@@ -98,9 +119,9 @@
                         <div class="col-12 col-sm-auto ms-sm-auto mt-2 mt-sm-0">
                             <div class="btn-group w-100" role="group">
                                 <input type="radio" class="btn-check day-filter" name="dayFilterUser" id="allDaysUser" value="all" checked>
-                                <label class="btn btn-outline-primary btn-sm" for="allDaysUser">ทุกวัน</label>
+                                <label class="btn btn-outline-primary btn-sm" for="allDaysUser"><i class="fa-solid fa-calendar-week"></i> ทุกวัน</label>
                                 <input type="radio" class="btn-check day-filter" name="dayFilterUser" id="weekendUser" value="weekend">
-                                <label class="btn btn-outline-primary btn-sm" for="weekendUser">ส./อา.</label>
+                                <label class="btn btn-outline-primary btn-sm" for="weekendUser"><i class="fa-solid fa-person-walking"></i> ส./อา.</label>
                             </div>
                         </div>
                     </div>
@@ -141,9 +162,9 @@
                             <div class="col-12 col-sm-auto ms-sm-auto mt-2 mt-sm-0">
                                 <div class="btn-group w-100" role="group">
                                     <input type="radio" class="btn-check day-filter" name="dayFilterAdmin" id="allDaysAdmin" value="all" checked>
-                                    <label class="btn btn-outline-primary btn-sm" for="allDaysAdmin">ทุกวัน</label>
+                                    <label class="btn btn-outline-primary btn-sm" for="allDaysAdmin"><i class="fa-solid fa-calendar-week"></i> ทุกวัน</label>
                                     <input type="radio" class="btn-check day-filter" name="dayFilterAdmin" id="weekendAdmin" value="weekend">
-                                    <label class="btn btn-outline-primary btn-sm" for="weekendAdmin">ส./อา.</label>
+                                    <label class="btn btn-outline-primary btn-sm" for="weekendAdmin"><i class="fa-solid fa-person-walking"></i> ส./อา.</label>
                                 </div>
                             </div>
                         </div>
@@ -227,7 +248,7 @@
     <script>
         $(document).ready(function() {
             // --- CONFIGURATION ---
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNi3WtaeECmpk5G9jdunyg2prrdIqBw4_4Bi1kFpso9KXRBSLyIjFqMSlX5vlmfsyPrw/exec";
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9hOerntgmOC4c1P7ymMHzUpw4-h1nogTaLaL5iq5AwAbCFTChT1c_BnreHTi3SyKeeA/exec";
             const START_YEAR = 2025;
             const END_YEAR = 2026;
             const APP_START_MONTH = 7; 
