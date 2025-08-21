@@ -13,6 +13,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
 
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
@@ -56,6 +59,11 @@
             box-shadow: 0 4px 12px rgba(0,0,0,.05);
             background-color: var(--white-color);
         }
+        
+        .card-title i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
 
         .table thead {
             background-color: var(--primary-light);
@@ -75,6 +83,10 @@
         .btn {
             border-radius: 0.5rem;
             transition: all 0.2s ease-in-out;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
         }
 
         .btn-primary {
@@ -117,6 +129,7 @@
             height: 10px;
             background-color: var(--primary-color);
             border-radius: 5px;
+            transition: width 0.2s ease-in-out;
         }
     </style>
 </head>
@@ -130,8 +143,12 @@
                 <p>วงดนตรีอยุธยา ป.บันเทิงศิลป์</p>
             </a>
             <div class="d-flex">
-                <button id="login-btn" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Admin Login</button>
-                <button id="logout-btn" class="btn btn-danger" style="display:none;">Logout</button>
+                <button id="login-btn" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    <i class="fa-solid fa-right-to-bracket"></i>Admin Login
+                </button>
+                <button id="logout-btn" class="btn btn-danger" style="display:none;">
+                    <i class="fa-solid fa-right-from-bracket"></i>Logout
+                </button>
             </div>
         </div>
     </nav>
@@ -142,10 +159,10 @@
         <div id="user-view">
             <div class="card">
                 <div class="card-body p-4">
-                    <h5 class="card-title mb-3">ตารางงาน</h5>
+                    <h5 class="card-title mb-3"><i class="fa-solid fa-calendar-days"></i>ตารางงาน</h5>
                     <div class="row g-3 align-items-center mb-3">
                         <div class="col-auto">
-                            <label for="month-select-user" class="col-form-label">เลือกเดือน:</label>
+                            <label for="month-select-user" class="col-form-label"><i class="fa-solid fa-calendar-alt me-2"></i>เลือกเดือน:</label>
                         </div>
                         <div class="col-md-4">
                             <select id="month-select-user" class="form-select"></select>
@@ -173,10 +190,10 @@
         <div id="admin-view">
             <div class="card">
                 <div class="card-body p-4">
-                    <h5 class="card-title mb-3">จัดการข้อมูลงาน (Admin)</h5>
+                    <h5 class="card-title mb-3"><i class="fa-solid fa-pencil"></i>จัดการข้อมูลงาน (Admin)</h5>
                      <div class="row g-3 align-items-center mb-3">
                         <div class="col-auto">
-                            <label for="month-select-admin" class="col-form-label">เลือกเดือน:</label>
+                            <label for="month-select-admin" class="col-form-label"><i class="fa-solid fa-calendar-alt me-2"></i>เลือกเดือน:</label>
                         </div>
                         <div class="col-md-4">
                             <select id="month-select-admin" class="form-select"></select>
@@ -196,7 +213,9 @@
                             </tbody>
                         </table>
                     </div>
-                    <button id="save-btn" class="btn btn-primary w-100 mt-3 py-2">บันทึกข้อมูล</button>
+                    <button id="save-btn" class="btn btn-primary w-100 mt-3 py-2">
+                        <i class="fa-solid fa-floppy-disk"></i>บันทึกข้อมูล
+                    </button>
                 </div>
             </div>
         </div>
@@ -220,7 +239,9 @@
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fa-solid fa-right-to-bracket"></i>Login
+                        </button>
                     </form>
                 </div>
             </div>
@@ -279,20 +300,12 @@
                     html: `
                         <p>กำลังดำเนินการ...</p>
                         <div class="progress-container">
-                            <div id="swal-progress-bar" class="progress-bar-custom"></div>
+                            <div id="swal-progress-bar" class="progress-bar-custom" style="width: 10%"></div>
                         </div>
                     `,
                     allowOutsideClick: false,
                     didOpen: () => {
                         Swal.showLoading();
-                        let progress = 0;
-                        const interval = setInterval(() => {
-                            progress += 5;
-                            $('#swal-progress-bar').css('width', progress + '%');
-                            if (progress >= 100) {
-                                clearInterval(interval);
-                            }
-                        }, 50);
                     }
                 });
             }
@@ -345,6 +358,12 @@
                 const [year, month] = selectedMonth.split('-');
                 showLoader('กำลังโหลดข้อมูล');
 
+                let progress = 10;
+                const loaderInterval = setInterval(() => {
+                    progress = Math.min(progress + Math.floor(Math.random() * 5) + 1, 95);
+                    $('#swal-progress-bar').css('width', progress + '%');
+                }, 200);
+
                 $.ajax({
                     url: SCRIPT_URL,
                     method: 'GET',
@@ -355,17 +374,24 @@
                         month: month
                     }
                 }).done(function(response) {
-                    Swal.close();
-                    if (response.success) {
-                        if (currentView === 'user') {
-                            renderUserTable(response.data);
+                    clearInterval(loaderInterval);
+                    $('#swal-progress-bar').css('width', '100%');
+
+                    setTimeout(() => {
+                        Swal.close();
+                        if (response.success) {
+                            if (currentView === 'user') {
+                                renderUserTable(response.data);
+                            } else {
+                                renderAdminTable(response.data);
+                            }
                         } else {
-                            renderAdminTable(response.data);
+                            Swal.fire('เกิดข้อผิดพลาด!', response.message || 'ไม่สามารถโหลดข้อมูลได้', 'error');
                         }
-                    } else {
-                        Swal.fire('เกิดข้อผิดพลาด!', response.message || 'ไม่สามารถโหลดข้อมูลได้', 'error');
-                    }
+                    }, 300);
+
                 }).fail(function() {
+                    clearInterval(loaderInterval);
                     Swal.fire('เกิดข้อผิดพลาด!', 'การเชื่อมต่อกับเซิร์ฟเวอร์ล้มเหลว', 'error');
                 });
             }
@@ -377,6 +403,11 @@
                 const password = $('#password').val();
                 
                 showLoader('กำลังเข้าสู่ระบบ');
+                let progress = 10;
+                const loaderInterval = setInterval(() => {
+                    progress = Math.min(progress + Math.floor(Math.random() * 5) + 1, 95);
+                    $('#swal-progress-bar').css('width', progress + '%');
+                }, 200);
 
                 $.ajax({
                     url: SCRIPT_URL,
@@ -388,19 +419,26 @@
                         password: password
                     }
                 }).done(function(response) {
-                    if (response.success) {
-                        Swal.fire('สำเร็จ!', 'เข้าสู่ระบบเรียบร้อย', 'success');
-                        $('#loginModal').modal('hide');
-                        $('#login-btn').hide();
-                        $('#logout-btn').show();
-                        $('#user-view').hide();
-                        $('#admin-view').show();
-                        currentView = 'admin';
-                        fetchEvents();
-                    } else {
-                        Swal.fire('ผิดพลาด!', 'Username หรือ Password ไม่ถูกต้อง', 'error');
-                    }
+                    clearInterval(loaderInterval);
+                    $('#swal-progress-bar').css('width', '100%');
+                    
+                    setTimeout(() => {
+                        if (response.success) {
+                            Swal.fire('สำเร็จ!', 'เข้าสู่ระบบเรียบร้อย', 'success');
+                            $('#loginModal').modal('hide');
+                            $('#login-btn').hide();
+                            $('#logout-btn').show();
+                            $('#user-view').hide();
+                            $('#admin-view').show();
+                            currentView = 'admin';
+                            fetchEvents();
+                        } else {
+                            Swal.fire('ผิดพลาด!', 'Username หรือ Password ไม่ถูกต้อง', 'error');
+                        }
+                    }, 300);
+
                 }).fail(function() {
+                    clearInterval(loaderInterval);
                     Swal.fire('เกิดข้อผิดพลาด!', 'การเชื่อมต่อล้มเหลว', 'error');
                 });
             });
@@ -416,8 +454,6 @@
 
             $('#save-btn').on('click', function() {
                 const dataToSave = [];
-                const selectedMonth = $('#month-select-admin').val();
-
                 $('#events-table-body-admin tr').each(function() {
                     const date = $(this).data('date');
                     const details = $(this).find('.event-details').val();
@@ -425,22 +461,34 @@
                 });
 
                 showLoader('กำลังบันทึกข้อมูล');
+                let progress = 10;
+                const loaderInterval = setInterval(() => {
+                    progress = Math.min(progress + Math.floor(Math.random() * 5) + 1, 95);
+                    $('#swal-progress-bar').css('width', progress + '%');
+                }, 200);
 
                 $.ajax({
                     url: SCRIPT_URL,
-                    method: 'GET', // JSONP uses GET
+                    method: 'GET',
                     dataType: 'jsonp',
                     data: {
                         action: 'saveEvents',
                         data: JSON.stringify(dataToSave)
                     }
                 }).done(function(response) {
-                    if (response.success) {
-                        Swal.fire('สำเร็จ!', 'บันทึกข้อมูลเรียบร้อย', 'success');
-                    } else {
-                        Swal.fire('ผิดพลาด!', response.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
-                    }
+                    clearInterval(loaderInterval);
+                    $('#swal-progress-bar').css('width', '100%');
+                    
+                    setTimeout(() => {
+                        if (response.success) {
+                            Swal.fire('สำเร็จ!', 'บันทึกข้อมูลเรียบร้อย', 'success');
+                        } else {
+                            Swal.fire('ผิดพลาด!', response.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+                        }
+                    }, 300);
+
                 }).fail(function() {
+                    clearInterval(loaderInterval);
                     Swal.fire('เกิดข้อผิดพลาด!', 'การเชื่อมต่อล้มเหลว', 'error');
                 });
             });
