@@ -21,11 +21,11 @@
 
     <style>
         :root {
-            --bg-color: #F9FAFB; /* Soft Gray Background */
-            --primary-color: #3B82F6; /* Professional Blue */
-            --primary-light: #DBEAFE; /* Lighter Blue for highlights */
-            --text-color: #1F2937; /* Dark Charcoal for text */
-            --border-color: #E5E7EB; /* Subtle borders */
+            --bg-color: #F9FAFB;
+            --primary-color: #3B82F6;
+            --primary-light: #DBEAFE;
+            --text-color: #1F2937;
+            --border-color: #E5E7EB;
             --white-color: #FFFFFF;
         }
 
@@ -33,7 +33,7 @@
             font-family: 'Sarabun', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            -webkit-text-size-adjust: 100%; /* Prevent font scaling on mobile */
+            -webkit-text-size-adjust: 100%;
         }
 
         .navbar {
@@ -41,6 +41,16 @@
             border-bottom: 1px solid var(--border-color);
         }
         
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            max-height: 40px;
+            margin-right: 10px;
+        }
+
         .navbar-brand h1 {
             font-size: 1.5rem;
             font-weight: 700;
@@ -51,12 +61,12 @@
         .navbar-brand p {
             font-size: 0.9rem;
             margin: 0;
-            color: #6B7280; /* Medium Gray */
+            color: #6B7280;
         }
 
         .card {
             border: 1px solid var(--border-color);
-            border-radius: 0.75rem; /* More rounded corners */
+            border-radius: 0.75rem;
             box-shadow: 0 4px 12px rgba(0,0,0,.05);
             background-color: var(--white-color);
         }
@@ -66,23 +76,15 @@
             color: var(--primary-color);
         }
 
-        .table {
-            word-wrap: break-word;
-        }
-
+        .table { word-wrap: break-word; }
         .table thead {
             background-color: var(--primary-light);
             color: var(--primary-color);
             font-weight: 600;
         }
-        
-        .table th, .table td {
-            vertical-align: middle;
-        }
-        
+        .table th, .table td { vertical-align: middle; }
         .table .date-col { width: 30%; }
         .table .day-col { width: 25%; }
-
 
         .form-control:focus, .form-select:focus {
             border-color: var(--primary-color);
@@ -93,38 +95,38 @@
             border-radius: 0.5rem;
             transition: all 0.2s ease-in-out;
         }
-        
-        .btn i {
-            margin-right: 0.5rem;
-        }
-
+        .btn i { margin-right: 0.5rem; }
         .btn-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
             font-weight: 500;
         }
-
         .btn-primary:hover {
-            background-color: #2563EB; /* Darker blue on hover */
+            background-color: #2563EB;
             border-color: #2563EB;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
         }
-
         .btn-outline-primary {
             color: var(--primary-color);
             border-color: var(--primary-color);
             font-weight: 500;
         }
-        
         .btn-outline-primary:hover, .btn-check:checked+.btn-outline-primary {
             background-color: var(--primary-color);
             color: var(--white-color);
         }
-
-        #admin-view {
-            display: none;
+        
+        .admin-nav .nav-link {
+            color: #6B7280;
         }
+        .admin-nav .nav-link.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        #admin-section, #settings-view { display: none; }
         
         .progress-container {
             width: 100%;
@@ -132,7 +134,6 @@
             border-radius: 5px;
             margin-top: 10px;
         }
-
         .progress-bar-custom {
             width: 0%;
             height: 10px;
@@ -141,26 +142,15 @@
             transition: width 0.2s ease-in-out;
         }
 
-        /* --- Mobile Responsive Adjustments --- */
         @media (max-width: 576px) {
-            .navbar-brand h1 {
-                font-size: 1.25rem;
-            }
-            .navbar-brand p {
-                font-size: 0.8rem;
-            }
-            .card-body {
-                padding: 1rem;
-            }
-            .table {
-                font-size: 0.9rem;
-            }
-            .table th, .table td {
-                padding: 0.75rem 0.5rem;
-            }
+            .navbar-brand h1 { font-size: 1.25rem; }
+            .navbar-brand p { font-size: 0.8rem; }
+            .card-body { padding: 1rem; }
+            .table { font-size: 0.9rem; }
+            .table th, .table td { padding: 0.75rem 0.5rem; }
             .table .date-col, .table .day-col {
-                width: auto; /* Let columns resize on mobile */
-                min-width: 110px; /* Ensure date is not too cramped */
+                width: auto;
+                min-width: 110px;
             }
         }
     </style>
@@ -170,9 +160,12 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <h1>ระบบแจ้งงาน</h1>
-                <p>วงดนตรีอยุธยา ป.บันเทิงศิลป์</p>
+            <a id="main-navbar-brand" class="navbar-brand" href="#">
+                <img id="brand-logo" src="" alt="Logo" style="display: none;">
+                <div>
+                    <h1 id="brand-title">ระบบแจ้งงาน</h1>
+                    <p id="brand-subtitle">วงดนตรีอยุธยา ป.บันเทิงศิลป์</p>
+                </div>
             </a>
             <div class="d-flex">
                 <button id="login-btn" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
@@ -228,46 +221,81 @@
             </div>
         </div>
 
-        <!-- Admin View -->
-        <div id="admin-view">
-            <div class="card">
-                <div class="card-body p-md-4">
-                    <h5 class="card-title mb-3"><i class="fa-solid fa-pencil"></i>จัดการข้อมูลงาน (Admin)</h5>
-                     <div class="row g-2 align-items-center mb-3">
-                        <div class="col-6 col-sm-4 col-md-3">
-                             <label for="year-select-admin" class="form-label visually-hidden">ปี</label>
-                             <select id="year-select-admin" class="form-select"></select>
-                        </div>
-                        <div class="col-6 col-sm-5 col-md-4">
-                             <label for="month-select-admin" class="form-label visually-hidden">เดือน</label>
-                             <select id="month-select-admin" class="form-select"></select>
-                        </div>
-                        <div class="col-12 col-sm-auto ms-sm-auto mt-2 mt-sm-0">
-                            <div class="btn-group w-100" role="group">
-                                <input type="radio" class="btn-check day-filter" name="dayFilterAdmin" id="allDaysAdmin" value="all" checked>
-                                <label class="btn btn-outline-primary btn-sm" for="allDaysAdmin">ทุกวัน</label>
-                                <input type="radio" class="btn-check day-filter" name="dayFilterAdmin" id="weekendAdmin" value="weekend">
-                                <label class="btn btn-outline-primary btn-sm" for="weekendAdmin">ส./อา.</label>
+        <!-- Admin Section -->
+        <div id="admin-section">
+            <ul class="nav nav-tabs mb-3 admin-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" id="admin-data-tab"><i class="fa-solid fa-calendar-days"></i> จัดการข้อมูล</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="admin-settings-tab"><i class="fa-solid fa-gear"></i> ตั้งค่าระบบ</a>
+                </li>
+            </ul>
+
+            <!-- Admin Data View -->
+            <div id="admin-data-view">
+                 <div class="card">
+                    <div class="card-body p-md-4">
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-6 col-sm-4 col-md-3">
+                                 <label for="year-select-admin" class="form-label visually-hidden">ปี</label>
+                                 <select id="year-select-admin" class="form-select"></select>
+                            </div>
+                            <div class="col-6 col-sm-5 col-md-4">
+                                 <label for="month-select-admin" class="form-label visually-hidden">เดือน</label>
+                                 <select id="month-select-admin" class="form-select"></select>
+                            </div>
+                            <div class="col-12 col-sm-auto ms-sm-auto mt-2 mt-sm-0">
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check day-filter" name="dayFilterAdmin" id="allDaysAdmin" value="all" checked>
+                                    <label class="btn btn-outline-primary btn-sm" for="allDaysAdmin">ทุกวัน</label>
+                                    <input type="radio" class="btn-check day-filter" name="dayFilterAdmin" id="weekendAdmin" value="weekend">
+                                    <label class="btn btn-outline-primary btn-sm" for="weekendAdmin">ส./อา.</label>
+                                </div>
                             </div>
                         </div>
+                        <div class="table-responsive">
+                             <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="date-col">วันที่</th>
+                                        <th scope="col" class="day-col">วัน</th>
+                                        <th scope="col">รายละเอียดงาน</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="events-table-body-admin">
+                                    <!-- Admin data form will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button id="save-btn" class="btn btn-primary w-100 mt-3 py-2">
+                            <i class="fa-solid fa-floppy-disk"></i>บันทึกข้อมูล
+                        </button>
                     </div>
-                    <div class="table-responsive">
-                         <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col" class="date-col">วันที่</th>
-                                    <th scope="col" class="day-col">วัน</th>
-                                    <th scope="col">รายละเอียดงาน</th>
-                                </tr>
-                            </thead>
-                            <tbody id="events-table-body-admin">
-                                <!-- Admin data form will be loaded here -->
-                            </tbody>
-                        </table>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div id="settings-view">
+                <div class="card">
+                    <div class="card-body p-md-4">
+                        <h5 class="card-title mb-4"><i class="fa-solid fa-sliders"></i>ตั้งค่าระบบทั่วไป</h5>
+                        <div class="mb-3">
+                            <label for="siteNameInput" class="form-label">ชื่อเว็บ</label>
+                            <input type="text" class="form-control" id="siteNameInput" placeholder="เช่น ระบบแจ้งงาน">
+                        </div>
+                        <div class="mb-3">
+                            <label for="siteSubtitleInput" class="form-label">คำอธิบายใต้ชื่อเว็บ</label>
+                            <input type="text" class="form-control" id="siteSubtitleInput" placeholder="เช่น วงดนตรีอยุธยา ป.บันเทิงศิลป์">
+                        </div>
+                        <div class="mb-3">
+                            <label for="logoUrlInput" class="form-label">URL โลโก้ (ถ้ามี)</label>
+                            <input type="text" class="form-control" id="logoUrlInput" placeholder="https://example.com/logo.png">
+                        </div>
+                        <button id="save-settings-btn" class="btn btn-primary w-100 mt-3 py-2">
+                            <i class="fa-solid fa-floppy-disk"></i>บันทึกการตั้งค่า
+                        </button>
                     </div>
-                    <button id="save-btn" class="btn btn-primary w-100 mt-3 py-2">
-                        <i class="fa-solid fa-floppy-disk"></i>บันทึกข้อมูล
-                    </button>
                 </div>
             </div>
         </div>
@@ -299,8 +327,7 @@
             </div>
         </div>
     </div>
-
-    <!-- Scripts -->
+    
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -308,13 +335,16 @@
     <script>
         $(document).ready(function() {
             // --- CONFIGURATION ---
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyMaQEh2viEg7ufz8gQfsEoovDz0cW9FhC64x_awDHcyAKNzXx0g6hCDtz2FfEF9J1L2Q/exec";
+            // !!! สำคัญ: ให้วาง URL ใหม่ที่ได้จากการ Deploy (ที่ลงท้ายด้วย /exec) ที่นี่ !!!
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxL7vAUd7xWXPdv9aM9_6PoSoSFgU3dqtuE1uwtHFQGUMQHQo2J5rHEAE7CyFgc5RluIQ/exec"; 
             const START_YEAR = 2025;
             const END_YEAR = 2026;
             const APP_START_MONTH = 7; // August (0-indexed)
 
             // --- STATE ---
             let currentView = 'user';
+            let currentAdminView = 'data'; // 'data' or 'settings'
+            let siteSettings = {};
             let monthlyEventsData = []; // Cache for fetched data
             let dayFilter = 'all'; // 'all' or 'weekend'
 
@@ -337,6 +367,22 @@
             }
 
             // --- UI FUNCTIONS ---
+            function updateBrandUI() {
+                $('#brand-title').text(siteSettings.siteName || 'ระบบแจ้งงาน');
+                $('#brand-subtitle').text(siteSettings.siteSubtitle || 'ป.บันเทิงศิลป์');
+                if (siteSettings.logoUrl && siteSettings.logoUrl.trim() !== '') {
+                    $('#brand-logo').attr('src', siteSettings.logoUrl).show();
+                } else {
+                    $('#brand-logo').hide();
+                }
+            }
+            
+            function populateSettingsForm() {
+                $('#siteNameInput').val(siteSettings.siteName || '');
+                $('#siteSubtitleInput').val(siteSettings.siteSubtitle || '');
+                $('#logoUrlInput').val(siteSettings.logoUrl || '');
+            }
+
             function initializeDropdowns() {
                 const $yearSelectUser = $('#year-select-user');
                 const $yearSelectAdmin = $('#year-select-admin');
@@ -440,6 +486,28 @@
             }
             
             // --- DATA FUNCTIONS ---
+            function loadInitialData() {
+                showLoader('กำลังโหลด...');
+                $.ajax({
+                    url: SCRIPT_URL,
+                    method: 'GET',
+                    dataType: 'jsonp',
+                    data: { action: 'getInitialData' }
+                }).done(function(response) {
+                    if (response.success) {
+                        siteSettings = response.settings;
+                        updateBrandUI();
+                        populateSettingsForm();
+                        initializeDropdowns();
+                        fetchEvents(); 
+                    } else {
+                         Swal.fire('เกิดข้อผิดพลาด!', 'ไม่สามารถโหลดข้อมูลเริ่มต้นได้', 'error');
+                    }
+                }).fail(function() {
+                    Swal.fire('เกิดข้อผิดพลาด!', 'การเชื่อมต่อล้มเหลว', 'error');
+                });
+            }
+
             function fetchEvents() {
                 const isUserView = currentView === 'user';
                 const year = $(isUserView ? '#year-select-user' : '#year-select-admin').val();
@@ -484,13 +552,18 @@
                     dataType: 'jsonp',
                     data: { action: 'login', username: username, password: password }
                 }).done(function(response) {
+                    Swal.close();
                     if (response.success) {
                         Swal.fire('สำเร็จ!', 'เข้าสู่ระบบเรียบร้อย', 'success');
                         $('#loginModal').modal('hide');
                         $('#login-btn').hide();
                         $('#logout-btn').show();
                         $('#user-view').hide();
-                        $('#admin-view').show();
+                        $('#admin-section').show();
+                        $('#admin-data-view').show();
+                        $('#settings-view').hide();
+                        $('#admin-data-tab').addClass('active');
+                        $('#admin-settings-tab').removeClass('active');
                         currentView = 'admin';
                         fetchEvents();
                     } else {
@@ -504,17 +577,61 @@
             $('#logout-btn').on('click', function() {
                 $('#login-btn').show();
                 $('#logout-btn').hide();
-                $('#admin-view').hide();
+                $('#admin-section').hide();
                 $('#user-view').show();
                 currentView = 'user';
                 fetchEvents();
+            });
+
+            $('#admin-data-tab').on('click', function(e) {
+                e.preventDefault();
+                currentAdminView = 'data';
+                $('#settings-view').hide();
+                $('#admin-data-view').show();
+                $(this).addClass('active');
+                $('#admin-settings-tab').removeClass('active');
+            });
+
+            $('#admin-settings-tab').on('click', function(e) {
+                e.preventDefault();
+                currentAdminView = 'settings';
+                $('#admin-data-view').hide();
+                $('#settings-view').show();
+                $(this).addClass('active');
+                $('#admin-data-tab').removeClass('active');
+            });
+
+            $('#save-settings-btn').on('click', function() {
+                const newSettings = {
+                    siteName: $('#siteNameInput').val(),
+                    siteSubtitle: $('#siteSubtitleInput').val(),
+                    logoUrl: $('#logoUrlInput').val()
+                };
+                showLoader('กำลังบันทึกการตั้งค่า');
+                $.ajax({
+                    url: SCRIPT_URL,
+                    method: 'GET',
+                    dataType: 'jsonp',
+                    data: { action: 'saveSettings', data: JSON.stringify(newSettings) }
+                }).done(function(response) {
+                    Swal.close();
+                    if (response.success) {
+                        Swal.fire('สำเร็จ!', 'บันทึกการตั้งค่าเรียบร้อย', 'success');
+                        siteSettings = newSettings;
+                        updateBrandUI();
+                    } else {
+                        Swal.fire('ผิดพลาด!', response.message || 'ไม่สามารถบันทึกได้', 'error');
+                    }
+                }).fail(function() {
+                    Swal.fire('เกิดข้อผิดพลาด!', 'การเชื่อมต่อล้มเหลว', 'error');
+                });
             });
 
             $('#save-btn').on('click', function() {
                 const dataToSave = [];
                 $('#events-table-body-admin tr').each(function() {
                     const date = $(this).data('date');
-                    if(date){ // Ensure it's a data row
+                    if(date){ 
                         const details = $(this).find('.event-details').val();
                         dataToSave.push({ date: date, details: details });
                     }
@@ -527,6 +644,7 @@
                     dataType: 'jsonp',
                     data: { action: 'saveEvents', data: JSON.stringify(dataToSave) }
                 }).done(function(response) {
+                     Swal.close();
                      if (response.success) {
                         Swal.fire('สำเร็จ!', 'บันทึกข้อมูลเรียบร้อย', 'success');
                     } else {
@@ -550,10 +668,8 @@
             });
 
             // --- INITIALIZATION ---
-            initializeDropdowns();
-            fetchEvents();
+            loadInitialData();
         });
     </script>
-
 </body>
 </html>
