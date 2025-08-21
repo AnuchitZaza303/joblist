@@ -5,153 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบแจ้งงาน - ป.บันเทิงศิลป์</title>
     
-    <!-- Bootstrap CSS -->
+    <!-- Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts: Sarabun -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- SweetAlert2 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
     <style>
         :root {
-            --bg-color: #F9FAFB;
-            --primary-color: #3B82F6;
-            --primary-light: #DBEAFE;
-            --text-color: #1F2937;
-            --border-color: #E5E7EB;
-            --white-color: #FFFFFF;
+            --bg-color: #F9FAFB; --primary-color: #3B82F6; --primary-light: #DBEAFE;
+            --text-color: #1F2937; --border-color: #E5E7EB; --white-color: #FFFFFF;
+            --danger-color: #EF4444; --danger-light: #FEE2E2;
         }
-
-        body {
-            font-family: 'Sarabun', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            -webkit-text-size-adjust: 100%;
-        }
-
-        .navbar {
-            background-color: var(--white-color);
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-        }
-
-        .navbar-brand img {
-            max-height: 40px;
-            margin-right: 10px;
-        }
-
-        .navbar-brand h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 0;
-            color: var(--primary-color);
-        }
-
-        .navbar-brand p {
-            font-size: 0.9rem;
-            margin: 0;
-            color: #6B7280;
-        }
-
-        .card {
-            border: 1px solid var(--border-color);
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,.05);
-            background-color: var(--white-color);
-        }
-        
-        .card-title i {
-            margin-right: 0.5rem;
-            color: var(--primary-color);
-        }
-
+        body { font-family: 'Sarabun', sans-serif; background-color: var(--bg-color); color: var(--text-color); -webkit-text-size-adjust: 100%; }
+        .navbar { background-color: var(--white-color); border-bottom: 1px solid var(--border-color); }
+        .navbar-brand { display: flex; align-items: center; }
+        .navbar-brand img { max-height: 40px; margin-right: 10px; }
+        .navbar-brand h1 { font-size: 1.5rem; font-weight: 700; margin: 0; color: var(--primary-color); }
+        .navbar-brand p { font-size: 0.9rem; margin: 0; color: #6B7280; }
+        .card { border: 1px solid var(--border-color); border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0,0,0,.05); background-color: var(--white-color); }
+        .card-title i { margin-right: 0.5rem; color: var(--primary-color); }
         .table { word-wrap: break-word; }
-        .table thead {
-            background-color: var(--primary-light);
-            color: var(--primary-color);
-            font-weight: 600;
-        }
+        .table thead { background-color: var(--primary-light); color: var(--primary-color); font-weight: 600; }
         .table th, .table td { vertical-align: middle; }
         .table .date-col { width: 30%; }
         .table .day-col { width: 25%; }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
-        }
-
-        .btn {
-            border-radius: 0.5rem;
-            transition: all 0.2s ease-in-out;
-        }
+        .form-control:focus, .form-select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25); }
+        .btn { border-radius: 0.5rem; transition: all 0.2s ease-in-out; }
         .btn i { margin-right: 0.5rem; }
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-            font-weight: 500;
-        }
-        .btn-primary:hover {
-            background-color: #2563EB;
-            border-color: #2563EB;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
-        }
-        .btn-outline-primary {
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-            font-weight: 500;
-        }
-        .btn-outline-primary:hover, .btn-check:checked+.btn-outline-primary {
-            background-color: var(--primary-color);
-            color: var(--white-color);
-        }
-        
-        .admin-nav .nav-link {
-            color: #6B7280;
-        }
-        .admin-nav .nav-link.active {
-            color: var(--primary-color);
-            font-weight: 600;
-            border-bottom: 2px solid var(--primary-color);
-        }
-
+        .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); font-weight: 500; }
+        .btn-primary:hover { background-color: #2563EB; border-color: #2563EB; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2); }
+        .btn-outline-primary { color: var(--primary-color); border-color: var(--primary-color); font-weight: 500; }
+        .btn-outline-primary:hover, .btn-check:checked+.btn-outline-primary { background-color: var(--primary-color); color: var(--white-color); }
+        .admin-nav .nav-link { color: #6B7280; }
+        .admin-nav .nav-link.active { color: var(--primary-color); font-weight: 600; border-bottom: 2px solid var(--primary-color); }
         #admin-section, #settings-view { display: none; }
-        
-        .progress-container {
-            width: 100%;
-            background-color: #e0e0e0;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        .progress-bar-custom {
-            width: 0%;
-            height: 10px;
-            background-color: var(--primary-color);
-            border-radius: 5px;
-            transition: width 0.2s ease-in-out;
-        }
-
+        .progress-container { width: 100%; background-color: #e0e0e0; border-radius: 5px; margin-top: 10px; }
+        .progress-bar-custom { width: 0%; height: 10px; background-color: var(--primary-color); border-radius: 5px; transition: width 0.2s ease-in-out; }
+        .reset-zone { border: 1px solid var(--danger-light); background-color: var(--danger-light); border-radius: 0.5rem; padding: 1rem; }
+        .reset-zone h6 { color: var(--danger-color); }
         @media (max-width: 576px) {
             .navbar-brand h1 { font-size: 1.25rem; }
             .navbar-brand p { font-size: 0.8rem; }
             .card-body { padding: 1rem; }
             .table { font-size: 0.9rem; }
             .table th, .table td { padding: 0.75rem 0.5rem; }
-            .table .date-col, .table .day-col {
-                width: auto;
-                min-width: 110px;
-            }
+            .table .date-col, .table .day-col { width: auto; min-width: 110px; }
         }
     </style>
 </head>
@@ -224,12 +125,8 @@
         <!-- Admin Section -->
         <div id="admin-section">
             <ul class="nav nav-tabs mb-3 admin-nav">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#" id="admin-data-tab"><i class="fa-solid fa-calendar-days"></i> จัดการข้อมูล</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" id="admin-settings-tab"><i class="fa-solid fa-gear"></i> ตั้งค่าระบบ</a>
-                </li>
+                <li class="nav-item"><a class="nav-link active" href="#" id="admin-data-tab"><i class="fa-solid fa-calendar-days"></i> จัดการข้อมูล</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" id="admin-settings-tab"><i class="fa-solid fa-gear"></i> ตั้งค่าระบบ</a></li>
             </ul>
 
             <!-- Admin Data View -->
@@ -282,19 +179,27 @@
                         <h5 class="card-title mb-4"><i class="fa-solid fa-sliders"></i>ตั้งค่าระบบทั่วไป</h5>
                         <div class="mb-3">
                             <label for="siteNameInput" class="form-label">ชื่อเว็บ</label>
-                            <input type="text" class="form-control" id="siteNameInput" placeholder="เช่น ระบบแจ้งงาน">
+                            <input type="text" class="form-control" id="siteNameInput">
                         </div>
                         <div class="mb-3">
                             <label for="siteSubtitleInput" class="form-label">คำอธิบายใต้ชื่อเว็บ</label>
-                            <input type="text" class="form-control" id="siteSubtitleInput" placeholder="เช่น วงดนตรีอยุธยา ป.บันเทิงศิลป์">
+                            <input type="text" class="form-control" id="siteSubtitleInput">
                         </div>
                         <div class="mb-3">
                             <label for="logoUrlInput" class="form-label">URL โลโก้ (ถ้ามี)</label>
-                            <input type="text" class="form-control" id="logoUrlInput" placeholder="https://example.com/logo.png">
+                            <input type="text" class="form-control" id="logoUrlInput">
                         </div>
-                        <button id="save-settings-btn" class="btn btn-primary w-100 mt-3 py-2">
-                            <i class="fa-solid fa-floppy-disk"></i>บันทึกการตั้งค่า
-                        </button>
+                        <button id="save-settings-btn" class="btn btn-primary w-100 mt-3 py-2"><i class="fa-solid fa-floppy-disk"></i>บันทึกการตั้งค่า</button>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-body p-md-4">
+                         <div class="reset-zone">
+                             <h6 class="fw-bold"><i class="fa-solid fa-triangle-exclamation"></i> พื้นที่อันตราย</h6>
+                             <p class="small text-muted">การรีเซ็ตระบบจะลบข้อมูลทั้งหมด (ข้อมูลงาน, ผู้ใช้, และการตั้งค่า) และคืนค่าเริ่มต้นจากโรงงาน ไม่สามารถกู้คืนได้</p>
+                             <button id="reset-system-btn" class="btn btn-danger w-100"><i class="fa-solid fa-arrows-rotate"></i>รีเซ็ตระบบทั้งหมด</button>
+                         </div>
                     </div>
                 </div>
             </div>
@@ -335,18 +240,17 @@
     <script>
         $(document).ready(function() {
             // --- CONFIGURATION ---
-            // !!! สำคัญ: ให้วาง URL ใหม่ที่ได้จากการ Deploy (ที่ลงท้ายด้วย /exec) ที่นี่ !!!
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxL7vAUd7xWXPdv9aM9_6PoSoSFgU3dqtuE1uwtHFQGUMQHQo2J5rHEAE7CyFgc5RluIQ/exec"; 
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzVwMRBX-qwrHwIEMa0OHAuIFhHS3aOY7OgQ-ecA3VkvP91PHYovMj97dLz7qyzIs_kow/exec"; // <-- Replace with your /exec URL
             const START_YEAR = 2025;
             const END_YEAR = 2026;
-            const APP_START_MONTH = 7; // August (0-indexed)
+            const APP_START_MONTH = 7; 
 
             // --- STATE ---
             let currentView = 'user';
-            let currentAdminView = 'data'; // 'data' or 'settings'
+            let currentAdminView = 'data';
             let siteSettings = {};
-            let monthlyEventsData = []; // Cache for fetched data
-            let dayFilter = 'all'; // 'all' or 'weekend'
+            let monthlyEventsData = [];
+            let dayFilter = 'all';
 
             // --- HELPER FUNCTIONS ---
             function getDayName(dateString) {
@@ -663,9 +567,66 @@
             $('#month-select-user, #month-select-admin').on('change', fetchEvents);
 
             $('.day-filter').on('change', function() {
-                dayFilter = $(this).val();
+                const name = $(this).attr('name');
+                dayFilter = $(`input[name="${name}"]:checked`).val();
                 renderCurrentTable();
             });
+            
+            $('#reset-system-btn').on('click', function() {
+                Swal.fire({
+                    title: 'คุณแน่ใจหรือไม่?',
+                    text: "การดำเนินการนี้จะลบข้อมูลทั้งหมดและไม่สามารถกู้คืนได้!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'ใช่, รีเซ็ตเลย!',
+                    cancelButtonText: 'ยกเลิก'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        executeSystemReset();
+                    }
+                })
+            });
+
+            function executeSystemReset() {
+                Swal.fire({
+                    title: 'กำลังรีเซ็ตระบบ...',
+                    html: 'กรุณารอสักครู่',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                setTimeout(() => {
+                    Swal.update({ html: 'ขั้นตอนที่ 1/3: กำลังลบข้อมูลเก่า...' });
+                    setTimeout(() => {
+                        Swal.update({ html: 'ขั้นตอนที่ 2/3: กำลังสร้างชีตและข้อมูลเริ่มต้น...' });
+                        $.ajax({
+                            url: SCRIPT_URL,
+                            method: 'GET',
+                            dataType: 'jsonp',
+                            data: { action: 'resetSystem' }
+                        }).done(function(response) {
+                            Swal.update({ html: 'ขั้นตอนที่ 3/3: กำลังรีเฟรชหน้าเว็บ...' });
+                            if (response.success) {
+                                Swal.fire({
+                                    title: 'รีเซ็ตสำเร็จ!',
+                                    text: 'ระบบได้กลับสู่ค่าเริ่มต้นแล้ว',
+                                    icon: 'success'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('ผิดพลาด!', response.message || 'ไม่สามารถรีเซ็ตระบบได้', 'error');
+                            }
+                        }).fail(function() {
+                            Swal.fire('เกิดข้อผิดพลาด!', 'การเชื่อมต่อล้มเหลว', 'error');
+                        });
+                    }, 1500);
+                }, 1000);
+            }
 
             // --- INITIALIZATION ---
             loadInitialData();
