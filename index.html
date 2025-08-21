@@ -162,9 +162,6 @@
                 width: auto; /* Let columns resize on mobile */
                 min-width: 110px; /* Ensure date is not too cramped */
             }
-            .filter-row .col-form-label {
-                margin-bottom: 0.5rem;
-            }
         }
     </style>
 </head>
@@ -195,12 +192,14 @@
             <div class="card">
                 <div class="card-body p-md-4">
                     <h5 class="card-title mb-3"><i class="fa-solid fa-calendar-days"></i>ตารางงาน</h5>
-                    <div class="row g-2 align-items-center mb-3 filter-row">
-                        <div class="col-auto">
-                            <label for="month-select-user" class="col-form-label"><i class="fa-solid fa-calendar-alt me-2"></i>เลือกเดือน:</label>
+                    <div class="row g-2 align-items-center mb-3">
+                        <div class="col-6 col-sm-4 col-md-3">
+                             <label for="year-select-user" class="form-label visually-hidden">ปี</label>
+                             <select id="year-select-user" class="form-select"></select>
                         </div>
-                        <div class="col-12 col-sm-6 col-md-5 col-lg-4">
-                            <select id="month-select-user" class="form-select"></select>
+                        <div class="col-6 col-sm-5 col-md-4">
+                             <label for="month-select-user" class="form-label visually-hidden">เดือน</label>
+                             <select id="month-select-user" class="form-select"></select>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -226,12 +225,14 @@
             <div class="card">
                 <div class="card-body p-md-4">
                     <h5 class="card-title mb-3"><i class="fa-solid fa-pencil"></i>จัดการข้อมูลงาน (Admin)</h5>
-                     <div class="row g-2 align-items-center mb-3 filter-row">
-                        <div class="col-auto">
-                            <label for="month-select-admin" class="col-form-label"><i class="fa-solid fa-calendar-alt me-2"></i>เลือกเดือน:</label>
+                     <div class="row g-2 align-items-center mb-3">
+                        <div class="col-6 col-sm-4 col-md-3">
+                             <label for="year-select-admin" class="form-label visually-hidden">ปี</label>
+                             <select id="year-select-admin" class="form-select"></select>
                         </div>
-                        <div class="col-12 col-sm-6 col-md-5 col-lg-4">
-                            <select id="month-select-admin" class="form-select"></select>
+                        <div class="col-6 col-sm-5 col-md-4">
+                             <label for="month-select-admin" class="form-label visually-hidden">เดือน</label>
+                             <select id="month-select-admin" class="form-select"></select>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -292,6 +293,9 @@
         $(document).ready(function() {
             // --- CONFIGURATION ---
             const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyMaQEh2viEg7ufz8gQfsEoovDz0cW9FhC64x_awDHcyAKNzXx0g6hCDtz2FfEF9J1L2Q/exec";
+            const START_YEAR = 2025;
+            const END_YEAR = 2026;
+            const APP_START_MONTH = 7; // August (0-indexed)
 
             // --- STATE ---
             let currentView = 'user';
@@ -303,29 +307,47 @@
             }
 
             // --- UI FUNCTIONS ---
-            function populateDateDropdowns() {
+            function initializeDropdowns() {
+                const $yearSelectUser = $('#year-select-user');
+                const $yearSelectAdmin = $('#year-select-admin');
+
+                for (let year = START_YEAR; year <= END_YEAR; year++) {
+                    const beYear = year + 543;
+                    $yearSelectUser.append(`<option value="${year}">พ.ศ. ${beYear}</option>`);
+                    $yearSelectAdmin.append(`<option value="${year}">พ.ศ. ${beYear}</option>`);
+                }
+
+                updateMonthDropdowns();
+            }
+
+            function updateMonthDropdowns() {
+                const today = new Date();
+                const currentYear = today.getFullYear();
+                const currentMonth = today.getMonth();
+
+                const selectedYearUser = parseInt($('#year-select-user').val());
+                const selectedYearAdmin = parseInt($('#year-select-admin').val());
+
+                populateMonthsForYear('#month-select-user', selectedYearUser, currentYear, currentMonth);
+                populateMonthsForYear('#month-select-admin', selectedYearAdmin, currentYear, currentMonth);
+            }
+
+            function populateMonthsForYear(selector, selectedYear, currentYear, currentMonth) {
+                const $monthSelect = $(selector);
+                $monthSelect.empty();
                 const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-                const startYear = 2025; // 2568
-                const endYear = 2026;   // 2569
-                const startMonth = 7; // สิงหาคม (0-indexed)
-
-                const $selectUser = $('#month-select-user');
-                const $selectAdmin = $('#month-select-admin');
                 
-                $selectUser.empty();
-                $selectAdmin.empty();
+                let startMonth = 0;
+                if (selectedYear === START_YEAR) {
+                    startMonth = APP_START_MONTH;
+                }
+                if (selectedYear === currentYear) {
+                    startMonth = Math.max(startMonth, currentMonth);
+                }
 
-                for (let year = startYear; year <= endYear; year++) {
-                    const monthStart = (year === startYear) ? startMonth : 0;
-                    const monthEnd = (year === endYear) ? 11 : 11;
-                    for (let month = monthStart; month <= monthEnd; month++) {
-                        const monthName = months[month];
-                        const beYear = year + 543;
-                        const value = `${year}-${String(month + 1).padStart(2, '0')}`;
-                        const optionText = `${monthName} ${beYear}`;
-                        $selectUser.append(`<option value="${value}">${optionText}</option>`);
-                        $selectAdmin.append(`<option value="${value}">${optionText}</option>`);
-                    }
+                for (let i = startMonth; i < 12; i++) {
+                    const monthValue = String(i + 1).padStart(2, '0');
+                    $monthSelect.append(`<option value="${monthValue}">${months[i]}</option>`);
                 }
             }
 
@@ -345,52 +367,53 @@
                 });
             }
 
-            function renderUserTable(data) {
-                const $tbody = $('#events-table-body-user');
+            function renderTable(tbodySelector, data) {
+                const $tbody = $(tbodySelector);
                 $tbody.empty();
-                if (data.length === 0) {
-                    $tbody.html('<tr><td colspan="3" class="text-center py-4">ไม่พบข้อมูลสำหรับเดือนนี้</td></tr>');
-                    return;
-                }
-                data.forEach(item => {
-                    const row = `
-                        <tr>
-                            <td>${new Date(item.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</td>
-                            <td>${getDayName(item.date)}</td>
-                            <td>${item.details || '-'}</td>
-                        </tr>
-                    `;
-                    $tbody.append(row);
-                });
-            }
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                let hasVisibleEvents = false;
 
-            function renderAdminTable(data) {
-                const $tbody = $('#events-table-body-admin');
-                $tbody.empty();
-                 if (data.length === 0) {
-                    $tbody.html('<tr><td colspan="3" class="text-center py-4">ไม่สามารถโหลดข้อมูลได้ กรุณาลองอีกครั้ง</td></tr>');
-                    return;
-                }
                 data.forEach(item => {
+                    const itemDate = new Date(item.date + 'T00:00:00');
+                    if (itemDate < today) {
+                        return; // Skip past dates
+                    }
+
+                    hasVisibleEvents = true;
+                    const isUserView = tbodySelector.includes('user');
+                    const detailsContent = isUserView 
+                        ? (item.details || '-')
+                        : `<input type="text" class="form-control event-details" value="${item.details || ''}">`;
+
                     const row = `
                         <tr data-date="${item.date}">
                             <td>${new Date(item.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</td>
                             <td>${getDayName(item.date)}</td>
-                            <td>
-                                <input type="text" class="form-control event-details" value="${item.details || ''}">
-                            </td>
+                            <td>${detailsContent}</td>
                         </tr>
                     `;
                     $tbody.append(row);
                 });
+
+                if (!hasVisibleEvents) {
+                    $tbody.html('<tr><td colspan="3" class="text-center py-4">ไม่พบข้อมูลสำหรับช่วงเวลาที่เลือก</td></tr>');
+                }
             }
             
             // --- DATA FUNCTIONS ---
             function fetchEvents() {
-                const selectedMonth = (currentView === 'user') ? $('#month-select-user').val() : $('#month-select-admin').val();
-                if (!selectedMonth) return;
+                const isUserView = currentView === 'user';
+                const year = $(isUserView ? '#year-select-user' : '#year-select-admin').val();
+                const month = $(isUserView ? '#month-select-user' : '#month-select-admin').val();
 
-                const [year, month] = selectedMonth.split('-');
+                if (!year || !month) {
+                    // Clear table if no month is available/selected
+                    const tbodySelector = isUserView ? '#events-table-body-user' : '#events-table-body-admin';
+                    $(tbodySelector).html('<tr><td colspan="3" class="text-center py-4">กรุณาเลือกปีและเดือน</td></tr>');
+                    return;
+                }
+
                 showLoader('กำลังโหลดข้อมูล');
 
                 let progress = 10;
@@ -403,11 +426,7 @@
                     url: SCRIPT_URL,
                     method: 'GET',
                     dataType: 'jsonp',
-                    data: {
-                        action: 'getEvents',
-                        year: year,
-                        month: month
-                    }
+                    data: { action: 'getEvents', year: year, month: month }
                 }).done(function(response) {
                     clearInterval(loaderInterval);
                     $('#swal-progress-bar').css('width', '100%');
@@ -415,11 +434,8 @@
                     setTimeout(() => {
                         Swal.close();
                         if (response.success) {
-                            if (currentView === 'user') {
-                                renderUserTable(response.data);
-                            } else {
-                                renderAdminTable(response.data);
-                            }
+                            const tbodySelector = isUserView ? '#events-table-body-user' : '#events-table-body-admin';
+                            renderTable(tbodySelector, response.data);
                         } else {
                             Swal.fire('เกิดข้อผิดพลาด!', response.message || 'ไม่สามารถโหลดข้อมูลได้', 'error');
                         }
@@ -438,42 +454,25 @@
                 const password = $('#password').val();
                 
                 showLoader('กำลังเข้าสู่ระบบ');
-                let progress = 10;
-                const loaderInterval = setInterval(() => {
-                    progress = Math.min(progress + Math.floor(Math.random() * 5) + 1, 95);
-                    $('#swal-progress-bar').css('width', progress + '%');
-                }, 200);
-
                 $.ajax({
                     url: SCRIPT_URL,
                     method: 'GET',
                     dataType: 'jsonp',
-                    data: {
-                        action: 'login',
-                        username: username,
-                        password: password
-                    }
+                    data: { action: 'login', username: username, password: password }
                 }).done(function(response) {
-                    clearInterval(loaderInterval);
-                    $('#swal-progress-bar').css('width', '100%');
-                    
-                    setTimeout(() => {
-                        if (response.success) {
-                            Swal.fire('สำเร็จ!', 'เข้าสู่ระบบเรียบร้อย', 'success');
-                            $('#loginModal').modal('hide');
-                            $('#login-btn').hide();
-                            $('#logout-btn').show();
-                            $('#user-view').hide();
-                            $('#admin-view').show();
-                            currentView = 'admin';
-                            fetchEvents();
-                        } else {
-                            Swal.fire('ผิดพลาด!', 'Username หรือ Password ไม่ถูกต้อง', 'error');
-                        }
-                    }, 300);
-
+                    if (response.success) {
+                        Swal.fire('สำเร็จ!', 'เข้าสู่ระบบเรียบร้อย', 'success');
+                        $('#loginModal').modal('hide');
+                        $('#login-btn').hide();
+                        $('#logout-btn').show();
+                        $('#user-view').hide();
+                        $('#admin-view').show();
+                        currentView = 'admin';
+                        fetchEvents();
+                    } else {
+                        Swal.fire('ผิดพลาด!', 'Username หรือ Password ไม่ถูกต้อง', 'error');
+                    }
                 }).fail(function() {
-                    clearInterval(loaderInterval);
                     Swal.fire('เกิดข้อผิดพลาด!', 'การเชื่อมต่อล้มเหลว', 'error');
                 });
             });
@@ -491,47 +490,38 @@
                 const dataToSave = [];
                 $('#events-table-body-admin tr').each(function() {
                     const date = $(this).data('date');
-                    const details = $(this).find('.event-details').val();
-                    dataToSave.push({ date: date, details: details });
+                    if(date){ // Ensure it's a data row
+                        const details = $(this).find('.event-details').val();
+                        dataToSave.push({ date: date, details: details });
+                    }
                 });
 
                 showLoader('กำลังบันทึกข้อมูล');
-                let progress = 10;
-                const loaderInterval = setInterval(() => {
-                    progress = Math.min(progress + Math.floor(Math.random() * 5) + 1, 95);
-                    $('#swal-progress-bar').css('width', progress + '%');
-                }, 200);
-
                 $.ajax({
                     url: SCRIPT_URL,
                     method: 'GET',
                     dataType: 'jsonp',
-                    data: {
-                        action: 'saveEvents',
-                        data: JSON.stringify(dataToSave)
-                    }
+                    data: { action: 'saveEvents', data: JSON.stringify(dataToSave) }
                 }).done(function(response) {
-                    clearInterval(loaderInterval);
-                    $('#swal-progress-bar').css('width', '100%');
-                    
-                    setTimeout(() => {
-                        if (response.success) {
-                            Swal.fire('สำเร็จ!', 'บันทึกข้อมูลเรียบร้อย', 'success');
-                        } else {
-                            Swal.fire('ผิดพลาด!', response.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
-                        }
-                    }, 300);
-
+                     if (response.success) {
+                        Swal.fire('สำเร็จ!', 'บันทึกข้อมูลเรียบร้อย', 'success');
+                    } else {
+                        Swal.fire('ผิดพลาด!', response.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+                    }
                 }).fail(function() {
-                    clearInterval(loaderInterval);
                     Swal.fire('เกิดข้อผิดพลาด!', 'การเชื่อมต่อล้มเหลว', 'error');
                 });
+            });
+
+            $('#year-select-user, #year-select-admin').on('change', function() {
+                updateMonthDropdowns();
+                fetchEvents();
             });
 
             $('#month-select-user, #month-select-admin').on('change', fetchEvents);
 
             // --- INITIALIZATION ---
-            populateDateDropdowns();
+            initializeDropdowns();
             fetchEvents();
         });
     </script>
