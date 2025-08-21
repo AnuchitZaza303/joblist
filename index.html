@@ -222,7 +222,8 @@
     <script>
         $(document).ready(function() {
             // --- CONFIGURATION ---
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKTIyFdXvG6c6e-Jp3p25SdORhcXjjfA3hfP-K5NA8/dev";
+            // !!! สำคัญ: ให้วาง URL ใหม่ที่ได้จากการ Deploy (ที่ลงท้ายด้วย /exec) ที่นี่ !!!
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyMaQEh2viEg7ufz8gQfsEoovDz0cW9FhC64x_awDHcyAKNzXx0g6hCDtz2FfEF9J1L2Q/exec";
 
             // --- STATE ---
             let currentView = 'user';
@@ -403,12 +404,12 @@
 
             $('#save-btn').on('click', function() {
                 const dataToSave = [];
+                const selectedMonth = $('#month-select-admin').val();
+
                 $('#events-table-body-admin tr').each(function() {
                     const date = $(this).data('date');
                     const details = $(this).find('.event-details').val();
-                    if(details.trim() !== '') {
-                       dataToSave.push({ date: date, details: details });
-                    }
+                    dataToSave.push({ date: date, details: details });
                 });
 
                 showLoader('กำลังบันทึกข้อมูล');
